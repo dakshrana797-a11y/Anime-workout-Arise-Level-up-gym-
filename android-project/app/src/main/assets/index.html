@@ -86,6 +86,38 @@ html{scroll-behavior:smooth}body:before{content:"";position:fixed;inset:0;pointe
 .class:nth-child(2n) .classPortrait svg{animation-delay:.7s}
 @keyframes portraitFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-3px)}}
 .class .symbol{display:none}
+
+/* CINEMATIC HUNTER FX */
+@keyframes hunterAura{0%,100%{opacity:.35;transform:scale(.82)}50%{opacity:.9;transform:scale(1.18)}}
+@keyframes energySweep{0%{transform:translateX(-140%) skewX(-20deg);opacity:0}18%{opacity:.8}55%,100%{transform:translateX(220%) skewX(-20deg);opacity:0}}
+@keyframes neonPulse{0%,100%{box-shadow:0 0 0 #55dfff00,inset 0 0 0 #55dfff00}50%{box-shadow:0 0 22px #55dfff44,inset 0 0 18px #55dfff12}}
+@keyframes cardRise{0%{opacity:0;transform:translateY(16px) scale(.97);filter:blur(3px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes titleGlitch{0%,92%,100%{text-shadow:0 0 14px #55dfff66}94%{text-shadow:-2px 0 #ff4f9a,2px 0 #55dfff}96%{text-shadow:2px 0 #ff4f9a,-2px 0 #55dfff}}
+@keyframes scanLine{0%{top:-15%}100%{top:115%}}
+@keyframes orbFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(8deg)}}
+.classPortrait{isolation:isolate;animation:neonPulse 4s ease-in-out infinite}
+.classPortrait:before{content:"";position:absolute;z-index:0;inset:-35%;background:conic-gradient(from 0deg,transparent,#55dfff44,transparent,#a68bff44,transparent);animation:spinAura 9s linear infinite}
+@keyframes spinAura{to{transform:rotate(360deg)}}
+.classPortrait:after{z-index:2;pointer-events:none;content:"";position:absolute;top:0;left:-40%;width:32%;height:100%;background:linear-gradient(90deg,transparent,#baf6ff55,transparent);animation:energySweep 5s ease-in-out infinite}
+.classPortrait svg{position:relative;z-index:1;animation:portraitFloat 3s ease-in-out infinite,portraitGlow 3s ease-in-out infinite}
+@keyframes portraitGlow{0%,100%{filter:drop-shadow(0 0 5px #65dfff55)}50%{filter:drop-shadow(0 0 15px #65dfffaa)}}
+.class{animation:cardRise .55s both}
+.class:nth-child(2){animation-delay:.06s}.class:nth-child(3){animation-delay:.12s}.class:nth-child(4){animation-delay:.18s}
+.class:nth-child(5){animation-delay:.24s}.class:nth-child(6){animation-delay:.30s}.class:nth-child(7){animation-delay:.36s}.class:nth-child(8){animation-delay:.42s}
+.brand,.splashTitle{animation:titleGlitch 7s steps(1) infinite}
+.rankEmblem{animation:orbFloat 3s ease-in-out infinite,neonPulse 3s ease-in-out infinite}
+.rankPanel{position:relative;overflow:hidden}
+.rankPanel:after{content:"";position:absolute;top:-20%;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#b9f5ff,transparent);box-shadow:0 0 15px #55dfff;animation:scanLine 4s linear infinite;pointer-events:none}
+button,.tabs button,.badge{transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
+button:hover{filter:brightness(1.2);box-shadow:0 0 18px #55dfff44}
+button:active{transform:scale(.94);filter:brightness(1.35)}
+.exerciseTile{animation:cardRise .4s both}
+.exerciseTile:nth-child(2){animation-delay:.04s}.exerciseTile:nth-child(3){animation-delay:.08s}.exerciseTile:nth-child(4){animation-delay:.12s}.exerciseTile:nth-child(5){animation-delay:.16s}
+.toast.show{animation:toastPop .42s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes toastPop{0%{transform:translate(-50%,25px) scale(.8);filter:blur(3px)}100%{transform:translate(-50%,0) scale(1);filter:blur(0)}}
+.overlay.show{animation:overlayFlash .45s ease both}
+@keyframes overlayFlash{0%{opacity:0;backdrop-filter:blur(0)}100%{opacity:1;backdrop-filter:blur(8px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style></head><body>
 <div class="overlay" id="setupOverlay"><div class="setupCard"><div class="eyebrow">PLAYER REGISTRATION // LOCAL PROFILE</div><div class="setupTitle">INITIALISE HUNTER</div><p class="tiny">Set a safe starting point. Your entries stay on this device.</p><div class="setupGrid">
 <div class="setupField"><label>AGE</label><input id="setupAge" type="number" min="13" max="99" placeholder="e.g. 16"></div><div class="setupField"><label>HEIGHT (CM)</label><input id="setupHeight" type="number" min="100" max="230" placeholder="Optional"></div><div class="setupField"><label>CURRENT WEIGHT (KG)</label><input id="setupWeight" type="number" min="25" max="300" step=".1" placeholder="Optional"></div><div class="setupField"><label>MAIN GOAL</label><select id="setupGoal"><option>General fitness</option><option>Stamina</option><option>Mobility</option><option>Football coordination</option><option>Strength skills</option><option>Healthy routine</option></select></div><div class="setupField"><label>EXPERIENCE</label><select id="setupExperience"><option>Beginner</option><option>Some experience</option><option>Experienced</option></select></div><div class="setupField"><label>DAYS PER WEEK</label><select id="setupDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div class="setupField full"><label>EQUIPMENT</label><select id="setupEquipment"><option>Bodyweight only</option><option>Resistance band</option><option>Home equipment</option><option>Gym access</option><option>Home + gym</option></select></div><div class="setupField full"><label>HEALTH / EXERCISE RESTRICTIONS</label><select id="setupHealth"><option value="none">No known restrictions</option><option value="yes">I have a health condition or restrictions</option><option value="unsure">I'm unsure — ask my clinician first</option></select></div></div>
