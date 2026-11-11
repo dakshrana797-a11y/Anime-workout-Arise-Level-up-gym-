@@ -51,7 +51,7 @@ button{background:#1c3158;color:var(--white);border:1px solid #45669d;border-rad
  <div class="notice"><b>Boxing path:</b> The Su-ho and Baku classes include non-contact boxing-fitness conditioning, rhythm, skipping and general coordination. They do not teach punches, fighting combinations, takedowns, sparring or ways to hurt someone. For actual boxing technique, learn in person with a qualified coach in a supervised, protective setting.</div>
 </section>
 <section id="progress" class="view hidden">
- <div class="panel"><h2>PROGRESSION & ACHIEVEMENTS</h2><div class="statgrid" id="stats"></div><div id="achievements" class="muted" style="font-size:12px;line-height:2;margin-top:14px"></div></div>
+ <div class="panel"><h2>PROGRESSION & ACHIEVEMENTS</h2><div class="statgrid" id="stats"></div><div id="achievements" class="muted" style="font-size:12px;line-height:2;margin-top:14px"></div></div><div class="panel"><div class="row"><h2>HUNTER CALENDAR</h2><span class="badge" id="calendarMonth"></span></div><div class="calendar" id="calendar"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div><p class="tiny">Glowing days mark dates when you completed at least one quest.</p></div>
  <div class="panel"><div class="row"><div><h2>WEEKLY GATE</h2><div class="tiny">Days with completed quests this week</div></div><strong id="week">0 / 3</strong></div><div class="bar"><div class="fill" id="weekBar"></div></div><button class="primary" id="weekClaim" style="margin-top:12px" onclick="claimWeekly()">Claim weekly reward · +30 XP</button><div class="divider"></div><div class="row"><div><h2>MONTHLY GATE</h2><div class="tiny">12 active days in this month</div></div><strong id="monthProgress">0 / 12</strong></div><div class="bar"><div class="fill" id="monthProgressBar"></div></div><button id="monthClaim" style="margin-top:12px" onclick="claimMonthly()">Claim monthly reward · +100 XP</button><div class="setting"><span class="tiny">Victory sound & haptics</span><input id="soundToggle" type="checkbox" checked onchange="setSound(this.checked)"></div><button style="margin-top:13px" onclick="rename()">Rename hunter</button> <button onclick="reset()">Reset all progress</button></div>
 </section>
 <div class="notice"><b>Safety protocol:</b> These are short, beginner-level activity ideas, not a medical or professional training plan. Start easy, warm up, rest, and stop if you feel pain, dizzy or unwell. No extreme anime challenges, max-effort tests, weight-cutting or training through symptoms. Get a parent/guardian and qualified healthcare professional's guidance before starting exercise if you have health restrictions. Build skills for health and performance, not to copy a fictional body.</div>
@@ -101,6 +101,12 @@ function render(){
  document.getElementById('monthProgressBar').style.width=Math.min(100,monthDays/12*100)+'%';
  document.getElementById('monthClaim').disabled=monthDays<12||d.monthlyClaims.includes(today().slice(0,7));
  document.getElementById('soundToggle').checked=d.sound;
+ const cal=document.getElementById('calendar'),yr=now.getFullYear(),mo=now.getMonth(),first=(new Date(yr,mo,1).getDay()+6)%7,daysIn=new Date(yr,mo+1,0).getDate();
+ document.getElementById('calendarMonth').textContent=now.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ cal.innerHTML=['M','T','W','T','F','S','S'].map(x=>'<span>'+x+'</span>').join('');
+ for(let p=0;p<first;p++)cal.innerHTML+='<b class="empty">.</b>';
+ for(let day=1;day<=daysIn;day++){let key=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');let cls=(key===today()?' today':'')+(d.days.includes(key)?' done':'');cal.innerHTML+='<b class="'+cls+'">'+day+'</b>';}
+
 
 }
 function select(id){d.selected=id;render()}function activate(){d.active=d.selected;d.done={};save();go('quests')}
