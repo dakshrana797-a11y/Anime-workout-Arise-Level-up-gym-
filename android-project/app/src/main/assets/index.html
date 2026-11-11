@@ -118,10 +118,29 @@ button:active{transform:scale(.94);filter:brightness(1.35)}
 .overlay.show{animation:overlayFlash .45s ease both}
 @keyframes overlayFlash{0%{opacity:0;backdrop-filter:blur(0)}100%{opacity:1;backdrop-filter:blur(8px)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* THREE-PAGE PLAYER SETUP WIZARD */
+.setupCard{position:relative}
+.wizardProgress{margin:16px 0 18px;display:flex;align-items:center;gap:12px;color:#7feaff;font-size:10px;font-weight:900;letter-spacing:.13em}
+.wizardTrack{height:5px;flex:1;border-radius:9px;background:#263958;overflow:hidden}
+.wizardTrack i{display:block;width:33.333%;height:100%;border-radius:9px;background:linear-gradient(90deg,#9b7dff,#55dfff);box-shadow:0 0 12px #55dfff;transition:width .35s ease}
+.wizardHeading{font-size:13px;font-weight:950;letter-spacing:.14em;color:#e9f6ff;margin-bottom:12px}
+.setupStep{display:none;opacity:0;transform:translateX(22px)}
+.setupStep.active{display:block;animation:wizardEnter .36s cubic-bezier(.2,.8,.2,1) both}
+.setupStep.leavingBack{animation:wizardBack .22s ease both}
+@keyframes wizardEnter{from{opacity:0;transform:translateX(24px);filter:blur(2px)}to{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes wizardBack{to{opacity:0;transform:translateX(-20px)}}
+.wizardNav{display:flex;gap:10px;margin-top:18px}
+.wizardArrow{flex:1;min-height:46px;font-size:12px;letter-spacing:.08em}
+.wizardArrow:disabled{opacity:.35;box-shadow:none}
+.wizardSkip{background:transparent;border-color:#3a527a;color:#9db5d9}
 </style></head><body>
-<div class="overlay" id="setupOverlay"><div class="setupCard"><div class="eyebrow">PLAYER REGISTRATION // LOCAL PROFILE</div><div class="setupTitle">INITIALISE HUNTER</div><p class="tiny">Set a safe starting point. Your entries stay on this device.</p><div class="setupGrid">
-<div class="setupField"><label>AGE</label><input id="setupAge" type="number" min="13" max="99" placeholder="e.g. 16"></div><div class="setupField"><label>HEIGHT (CM)</label><input id="setupHeight" type="number" min="100" max="230" placeholder="Optional"></div><div class="setupField"><label>CURRENT WEIGHT (KG)</label><input id="setupWeight" type="number" min="25" max="300" step=".1" placeholder="Optional"></div><div class="setupField"><label>MAIN GOAL</label><select id="setupGoal"><option>General fitness</option><option>Stamina</option><option>Mobility</option><option>Football coordination</option><option>Strength skills</option><option>Healthy routine</option></select></div><div class="setupField"><label>EXPERIENCE</label><select id="setupExperience"><option>Beginner</option><option>Some experience</option><option>Experienced</option></select></div><div class="setupField"><label>DAYS PER WEEK</label><select id="setupDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div class="setupField full"><label>EQUIPMENT</label><select id="setupEquipment"><option>Bodyweight only</option><option>Resistance band</option><option>Home equipment</option><option>Gym access</option><option>Home + gym</option></select></div><div class="setupField full"><label>HEALTH / EXERCISE RESTRICTIONS</label><select id="setupHealth"><option value="none">No known restrictions</option><option value="yes">I have a health condition or restrictions</option><option value="unsure">I'm unsure — ask my clinician first</option></select></div></div>
-<p class="setupHint">No BMI score or goal-weight target. For teens, weight goals and exercise plans should be guided by a qualified healthcare professional. Height and weight are optional notes, not a score.</p><div class="notice">If you have a medical condition or exercise restrictions, get parent/guardian and clinician clearance before using a workout. ARISE will not prescribe medical training or nutrition targets.</div><button class="primary" style="width:100%;margin-top:14px" onclick="saveProfile()">SAVE PROFILE & ENTER</button><button style="width:100%;margin-top:8px" onclick="skipProfile()">SKIP FOR NOW</button></div></div><div class="splash" id="splash"><div class="splashInner"><div class="splashMark">HUNTER SYSTEM // INITIALIZING</div><div class="splashTitle">ARISE</div><div class="splashQuote" id="splashQuote">Small steps, repeated daily, become extraordinary progress.</div><div class="splashTrack"><span></span></div><div class="tiny" id="splashCountdown">SYSTEM READY IN 10</div><button class="splashSkip" onclick="enterSystem()">ENTER SYSTEM</button></div></div>
+<div class="overlay" id="setupOverlay"><div class="setupCard"><div class="eyebrow">PLAYER REGISTRATION // LOCAL PROFILE</div><div class="setupTitle">INITIALISE HUNTER</div><p class="tiny">Set a safe starting point. Your entries stay on this device.</p><div class="wizardProgress"><span id="setupStepLabel">STEP 1 OF 3</span><div class="wizardTrack"><i id="setupStepFill"></i></div></div>
+<div class="setupStep active" data-setup-step="0"><div class="wizardHeading">PLAYER DETAILS</div><div class="setupGrid">
+<div class="setupField"><label>AGE</label><input id="setupAge" type="number" min="13" max="99" placeholder="e.g. 16"></div><div class="setupField"><label>HEIGHT (CM)</label><input id="setupHeight" type="number" min="100" max="230" placeholder="Optional"></div><div class="setupField"><label>CURRENT WEIGHT (KG)</label><input id="setupWeight" type="number" min="25" max="300" step=".1" placeholder="Optional"></div></div></div>
+<div class="setupStep" data-setup-step="1"><div class="wizardHeading">YOUR TRAINING PATH</div><div class="setupGrid"><div class="setupField"><label>MAIN GOAL</label><select id="setupGoal"><option>General fitness</option><option>Stamina</option><option>Mobility</option><option>Football coordination</option><option>Strength skills</option><option>Healthy routine</option></select></div><div class="setupField"><label>EXPERIENCE</label><select id="setupExperience"><option>Beginner</option><option>Some experience</option><option>Experienced</option></select></div><div class="setupField"><label>DAYS PER WEEK</label><select id="setupDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div></div></div>
+<div class="setupStep" data-setup-step="2"><div class="wizardHeading">EQUIPMENT & SAFETY</div><div class="setupGrid"><div class="setupField full"><label>EQUIPMENT</label><select id="setupEquipment"><option>Bodyweight only</option><option>Resistance band</option><option>Home equipment</option><option>Gym access</option><option>Home + gym</option></select></div><div class="setupField full"><label>HEALTH / EXERCISE RESTRICTIONS</label><select id="setupHealth"><option value="none">No known restrictions</option><option value="yes">I have a health condition or restrictions</option><option value="unsure">I'm unsure — ask my clinician first</option></select></div></div></div>
+<p class="setupHint">No BMI score or goal-weight target. For teens, weight goals and exercise plans should be guided by a qualified healthcare professional. Height and weight are optional notes, not a score.</p><div class="notice">If you have a medical condition or exercise restrictions, get parent/guardian and clinician clearance before using a workout. ARISE will not prescribe medical training or nutrition targets.</div><div class="wizardNav"><button id="setupBack" class="wizardArrow" onclick="setupStepBack()" disabled aria-label="Previous step">← BACK</button><button id="setupNext" class="primary wizardArrow" onclick="setupStepNext()">NEXT →</button><button id="setupFinish" class="primary wizardArrow hidden" onclick="saveProfile()">✓ SAVE PROFILE</button></div><button class="wizardSkip" style="width:100%;margin-top:8px" onclick="skipProfile()">SKIP FOR NOW</button></div></div><div class="splash" id="splash"><div class="splashInner"><div class="splashMark">HUNTER SYSTEM // INITIALIZING</div><div class="splashTitle">ARISE</div><div class="splashQuote" id="splashQuote">Small steps, repeated daily, become extraordinary progress.</div><div class="splashTrack"><span></span></div><div class="tiny" id="splashCountdown">SYSTEM READY IN 10</div><button class="splashSkip" onclick="enterSystem()">ENTER SYSTEM</button></div></div>
 <header><div class="eyebrow">SYSTEM ONLINE // PLAYER ACCESS GRANTED</div><div class="brand">ARISE: HUNTER SYSTEM</div><div class="sub">REAL-LIFE QUESTS • ANIME-INSPIRED CLASSES • YOUR PACE, YOUR PROGRESS</div></header>
 <main>
 <section id="home" class="view">
@@ -174,8 +193,29 @@ const rankLadders=[{name:'E-RANK',level:1,tier:'FOUNDATION'},{name:'D-RANK',leve
 function rankIndex(){let n=0;rankLadders.forEach((r,i)=>{if(d.level>=r.level)n=i});return n}function rank(){return rankLadders[rankIndex()].name}
 function rankInfo(){let i=rankIndex(),cur=rankLadders[i],next=rankLadders[i+1];if(!next)return {cur,next:null,pct:100};let span=next.level-cur.level,pct=Math.max(0,Math.min(100,((d.level-cur.level)+(d.xp%100)/100)/span*100));return {cur,next,pct}}
 function editProfile(){let p=d.profile||{};document.getElementById('setupAge').value=p.age||'';document.getElementById('setupHeight').value=p.height||'';document.getElementById('setupWeight').value=p.weight||'';document.getElementById('setupGoal').value=p.goal||'General fitness';document.getElementById('setupExperience').value=p.experience||'Beginner';document.getElementById('setupDays').value=String(p.days||d.weeklyTarget||3);document.getElementById('setupEquipment').value=p.equipment||'Bodyweight only';document.getElementById('setupHealth').value=p.health||'none';document.getElementById('setupOverlay').classList.add('show')}
+
+let setupStepIndex=0;
+function showSetupStep(next){
+ setupStepIndex=Math.max(0,Math.min(2,next));
+ document.querySelectorAll('.setupStep').forEach((el,i)=>{el.classList.toggle('active',i===setupStepIndex);el.classList.remove('leavingBack')});
+ const back=document.getElementById('setupBack'),nextBtn=document.getElementById('setupNext'),finish=document.getElementById('setupFinish');
+ back.disabled=setupStepIndex===0;
+ nextBtn.classList.toggle('hidden',setupStepIndex===2);
+ finish.classList.toggle('hidden',setupStepIndex!==2);
+ document.getElementById('setupStepLabel').textContent='STEP '+(setupStepIndex+1)+' OF 3';
+ document.getElementById('setupStepFill').style.width=((setupStepIndex+1)/3*100)+'%';
+}
+function setupStepNext(){
+ if(setupStepIndex===0){
+  const age=Number(document.getElementById('setupAge').value);
+  if(!age||age<13||age>99){alert('Enter a valid age to continue, or choose Skip for now.');return}
+ }
+ showSetupStep(setupStepIndex+1);
+}
+function setupStepBack(){showSetupStep(setupStepIndex-1)}
+
 function saveProfile(){let age=Number(document.getElementById('setupAge').value);if(!age||age<13||age>99){alert('Enter a valid age, or choose Skip for now.');return}d.profile={age,height:Number(document.getElementById('setupHeight').value)||null,weight:Number(document.getElementById('setupWeight').value)||null,goal:document.getElementById('setupGoal').value,experience:document.getElementById('setupExperience').value,days:Number(document.getElementById('setupDays').value),equipment:document.getElementById('setupEquipment').value,health:document.getElementById('setupHealth').value};d.weeklyTarget=d.profile.days;save();document.getElementById('setupOverlay').classList.remove('show');celebrate('HUNTER PROFILE READY','Your starting path is saved.')}
-function skipProfile(){sessionStorage.setItem('ariseSetupSkipped','1');document.getElementById('setupOverlay').classList.remove('show')}
+function skipProfile(){showSetupStep(0);sessionStorage.setItem('ariseSetupSkipped','1');document.getElementById('setupOverlay').classList.remove('show')}
 function saveRenalInstructions(){d.renalInstructions=document.getElementById('renalInstructions').value.trim();localStorage.setItem('ariseFinal',JSON.stringify(d));document.getElementById('renalSaved').textContent='Saved on this device.'}
 function saveMealNotes(){d.mealNotes=document.getElementById('mealNotes').value.trim();localStorage.setItem('ariseFinal',JSON.stringify(d));celebrate('MEAL NOTES SAVED','No calorie or food score was calculated.')}
 
