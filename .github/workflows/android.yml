@@ -6,27 +6,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check project ZIP
+      - name: Verify extracted Android project
         run: |
-          test -f Arise_Hunter_Android_Studio_Project.zip || {
-            echo "Project ZIP not found in repository root"
-            exit 1
-          }
-
-      - name: Extract project
-        run: |
-          unzip -o Arise_Hunter_Android_Studio_Project.zip -d source
-          PROJECT_DIR=$(dirname "$(find source -name settings.gradle -o -name settings.gradle.kts | head -n 1)")
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "Gradle project not found"
-            exit 1
-          fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          test -f android-project/settings.gradle
+          test -f android-project/app/src/main/assets/index.html
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -42,12 +29,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
-        run: gradle -p "$PROJECT_DIR" assembleDebug
+      - name: Build upgraded APK
+        run: gradle -p android-project assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Arise-Hunter-APK
-          path: source/**/build/outputs/apk/debug/*.apk
+          path: android-project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
