@@ -33,7 +33,10 @@ button{background:#1c3158;color:var(--white);border:1px solid #45669d;border-rad
 
 /* WORKOUT STUDIO */
 .studioModes{display:flex;gap:8px;margin:12px 0}.studioModes button{flex:1}.studioModes button.active{border-color:var(--cyan);background:linear-gradient(100deg,#334c85,#14516b)}.workoutCard{border:1px solid #314c78;background:linear-gradient(145deg,#101e3b,#0b1429);border-radius:13px;padding:12px;margin:9px 0}.workoutCard h3{font-size:13px;margin:0 0 5px}.workoutMeta{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0}.workoutMeta span{font-size:10px;color:#b9d5f7;background:#1b3154;border-radius:20px;padding:4px 7px}.workoutCard p{font-size:11px;line-height:1.5;color:var(--muted);margin:5px 0}.workoutCard label{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--cyan);margin-top:8px}.workoutCard input{accent-color:#55dfff;width:17px;height:17px}.studioProgress{height:8px;background:#263858;border-radius:20px;overflow:hidden}.studioProgress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#a68bff,#55dfff);transition:width .2s}
+.splash{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 35%,#1a3e78 0,#0a1430 48%,#050812 100%);transition:opacity .45s,visibility .45s}
+.splash.hide{opacity:0;visibility:hidden;pointer-events:none}.splashInner{width:min(440px,100%)}.splashMark{font-size:12px;letter-spacing:.35em;color:var(--cyan);font-weight:900}.splashTitle{font-size:clamp(30px,8vw,48px);font-weight:1000;letter-spacing:.12em;margin:12px 0;text-shadow:0 0 28px #50cfff99}.splashQuote{font-size:16px;line-height:1.6;color:#e1edff;min-height:52px}.splashTrack{height:5px;background:#203253;border-radius:9px;overflow:hidden;margin:24px 0 10px}.splashTrack span{display:block;height:100%;width:0;background:linear-gradient(90deg,#a68bff,#55dfff);animation:splashLoad 10s linear forwards}@keyframes splashLoad{to{width:100%}}.splashSkip{background:transparent;border-color:#4c6a9a;color:#dceaff;font-size:12px}
 </style></head><body>
+<div class="splash" id="splash"><div class="splashInner"><div class="splashMark">HUNTER SYSTEM // INITIALIZING</div><div class="splashTitle">ARISE</div><div class="splashQuote" id="splashQuote">Small steps, repeated daily, become extraordinary progress.</div><div class="splashTrack"><span></span></div><div class="tiny" id="splashCountdown">SYSTEM READY IN 10</div><button class="splashSkip" onclick="enterSystem()">ENTER SYSTEM</button></div></div>
 <header><div class="eyebrow">SYSTEM ONLINE // PLAYER ACCESS GRANTED</div><div class="brand">ARISE: HUNTER SYSTEM</div><div class="sub">REAL-LIFE QUESTS • ANIME-INSPIRED CLASSES • YOUR PACE, YOUR PROGRESS</div></header>
 <main>
 <section id="home" class="view">
@@ -76,7 +79,7 @@ const C={
  suho:{name:'Ahn Su-ho',title:'Weak Hero — Athletic Boxing Fitness',desc:'Non-contact conditioning, rhythm, coordination and balance inspired by Su-ho.',tag:'BOXING FITNESS',q:[['Boxing Fitness Warm-up','5 minutes easy walking, shoulder rolls and gentle mobility.',10,'Recovery'],['Rhythm & Steps','3 rounds of 30 seconds light step-taps; rest between rounds.',15,'Agility'],['Skipping Alternative','If safe and comfortable, 3 × 20 seconds easy rope skipping OR march in place.',15,'Endurance'],['Core & Cooldown','Gentle bird-dogs, then relaxed breathing and cooldown.',10,'Strength']]},
  baek:{name:'Baku',title:'Weak Hero — Strength & Conditioning',desc:'Steady general conditioning and body control inspired by Baku; no fighting drills.',tag:'CONDITIONING',q:[['Warm-up','5 minutes easy warm-up.',10,'Recovery'],['Supported Strength','2 easy sets of chair sit-to-stands.',15,'Strength'],['Coordination','3 rounds of gentle side steps for 20 seconds.',15,'Agility'],['Recovery Check','Take a break, hydrate normally and log how you feel.',10,'Recovery']]},
  messi:{name:'Messi',title:'Football Vision & Close Control',desc:'Football-inspired coordination, balance, passing practice and gentle footwork. Not a substitute for coached football training.',tag:'FOOTBALL CLASS',q:[['Ball Mastery Warm-up','5 minutes easy walking, ankle circles and gentle ball touches.',10,'Recovery'],['Close-Control Touches','3 easy rounds of 30 seconds alternating gentle inside-foot touches; rest between rounds.',15,'Agility'],['Passing Accuracy','10 minutes of short passes to a safe wall or partner, using comfortable pace.',15,'Discipline'],['Balance & Cooldown','Gentle single-leg balance near support, then easy walking cooldown.',10,'Recovery']]}}
-};
+
 const def={name:'PLAYER',xp:0,level:1,active:'saitama',selected:'saitama',stats:{Strength:1,Agility:1,Intelligence:1,Endurance:1,Recovery:1,Discipline:1},done:{},bonusDays:[],days:[],lastDate:'',sound:true,weeklyClaims:[],monthlyClaims:[]};
 let d;try{d={...def,...JSON.parse(localStorage.getItem('ariseFinal')||'{}')};d.stats={...def.stats,...d.stats};d.weeklyClaims=d.weeklyClaims||[];d.monthlyClaims=d.monthlyClaims||[];d.sound=d.sound!==false}catch(e){d={...def,stats:{...def.stats},weeklyClaims:[],monthlyClaims:[]}}
 function today(){return new Date().toLocaleDateString('en-CA')}function save(){localStorage.setItem('ariseFinal',JSON.stringify(d));render()}
@@ -159,4 +162,16 @@ function rename(){let n=prompt('Hunter name:',d.name);if(n&&n.trim()){d.name=n.t
 function reset(){if(confirm('Reset all Hunter System progress?')){localStorage.removeItem('ariseFinal');d={...def,stats:{...def.stats},done:{},days:[],bonusDays:[],weeklyClaims:[],monthlyClaims:[]};save()}}
 function go(id,btn){document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');else document.querySelectorAll('.tabs button')[['home','classes','studio','quests','progress'].indexOf(id)].classList.add('active')}
 resetDay();render();renderWorkout();
+const openingQuotes=[
+ "Small steps, repeated daily, become extraordinary progress.",
+ "Your only competition is who you were yesterday.",
+ "Discipline is choosing what matters over what is easy.",
+ "Progress is built one focused session at a time.",
+ "Stay patient. Build skill. Keep showing up."
+];
+document.getElementById('splashQuote').textContent=openingQuotes[Math.floor(Math.random()*openingQuotes.length)];
+let splashSeconds=10;
+const splashCounter=document.getElementById('splashCountdown');
+const splashTimer=setInterval(()=>{splashSeconds--;if(splashCounter)splashCounter.textContent=splashSeconds>0?'SYSTEM READY IN '+splashSeconds:'SYSTEM READY';if(splashSeconds<=0)enterSystem()},1000);
+function enterSystem(){clearInterval(splashTimer);const splash=document.getElementById('splash');if(splash)splash.classList.add('hide')}
 </script></body></html>
