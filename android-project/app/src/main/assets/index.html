@@ -20,6 +20,16 @@ button{background:#1c3158;color:var(--white);border:1px solid #45669d;border-rad
 .notice{font-size:11px;line-height:1.55;color:#b9c8e4;background:#0c1930;border:1px solid #38547e;padding:12px;border-radius:12px;margin-top:12px}
 .stat{border:1px solid #2a416a;border-radius:12px;padding:10px}.stat small{font-size:10px;color:var(--muted)}.stat strong{display:block;font-size:20px}.hidden{display:none!important}.hero{border:1px solid #3d6da4;background:linear-gradient(110deg,#17355c,#111b39 65%,#211b4d);border-radius:15px;padding:14px}.heroTitle{font-size:19px;font-weight:950}.gold{color:var(--gold)}.footer{text-align:center;color:#7487aa;font-size:10px;margin:18px}
 @media(min-width:650px){.cards{grid-template-columns:repeat(3,1fr)}.statgrid{grid-template-columns:repeat(4,1fr)}}
+
+/* HUNTER SYSTEM UPGRADE */
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 90% 10%,#48d8ff33,transparent 35%),linear-gradient(115deg,#142e58,#111a38 62%,#251c55)}
+.hero:after{content:"✦";position:absolute;right:18px;top:8px;font-size:90px;color:#8beaff22;text-shadow:0 0 30px #4adfff;pointer-events:none}
+.panel{backdrop-filter:blur(10px)}
+.brand{background:linear-gradient(90deg,#f6fbff,#7ceaff 45%,#bca9ff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.calendar span{font-size:10px;color:var(--muted);padding:6px 0}.calendar b{font-size:11px;padding:8px 2px;border-radius:8px;background:#0b1730;border:1px solid #263d63}.calendar b.today{border-color:var(--cyan);color:var(--cyan)}.calendar b.done{background:#164a55;border-color:#4ed9c7;color:#d5fff5}.calendar b.empty{opacity:0;background:transparent;border:0}
+.toast{position:fixed;z-index:20;left:50%;bottom:85px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:linear-gradient(100deg,#283e75,#12566c);border:1px solid #6beaff;border-radius:14px;padding:13px 18px;box-shadow:0 0 30px #36cfff55;text-align:center;transition:.25s;min-width:220px}.toast.show{opacity:1;transform:translate(-50%,0)}.toast strong{display:block;color:#fff;letter-spacing:.1em}.toast small{color:#a8f3ff}
+.reward{font-size:10px;color:var(--gold);font-weight:900}.setting{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid #2a3e62}
+@media(min-width:650px){.calendar b{padding:11px}}
 </style></head><body>
 <header><div class="eyebrow">SYSTEM ONLINE // PLAYER ACCESS GRANTED</div><div class="brand">ARISE: HUNTER SYSTEM</div><div class="sub">REAL-LIFE QUESTS • ANIME-INSPIRED CLASSES • YOUR PACE, YOUR PROGRESS</div></header>
 <main>
@@ -31,6 +41,7 @@ button{background:#1c3158;color:var(--white);border:1px solid #45669d;border-rad
  <div class="hero"><div class="eyebrow">ACTIVE HUNTER CLASS</div><div class="heroTitle" id="homeClass">SAITAMA — HERO FOUNDATION</div><p class="muted" id="homeDesc" style="font-size:12px;margin:5px 0 12px">Beginner-friendly balanced movement and fitness basics.</p><button class="primary" onclick="go('classes')">Change class</button></div>
  <div class="panel"><div class="row"><h2>TODAY'S MISSION</h2><span class="badge" id="doneCount">0 / 4</span></div><div id="homeQuests"></div><button class="primary" style="width:100%;margin-top:10px" onclick="go('quests')">Open quest board</button></div>
  <div class="panel"><h2>HUNTER ATTRIBUTES</h2><div class="statgrid" id="homeStats"></div></div>
+ <div class="panel"><div class="row"><h2>MONTHLY GATE</h2><span class="badge" id="monthCount">0 / 12 DAYS</span></div><p class="tiny">Build a steady routine. Any day with at least one completed quest counts.</p><div class="bar"><div class="fill" id="monthBar"></div></div></div>
 </section>
 <section id="classes" class="view hidden">
  <div class="panel"><div class="row"><h2>CHOOSE YOUR CLASS</h2><span class="badge">ONE ACTIVE AT A TIME</span></div><p class="tiny">Pick one anime-inspired training path. Activate a different class whenever you want; your XP stays saved.</p><div class="cards" id="classCards"></div><div class="hero" style="margin-top:12px"><div class="eyebrow">SELECTED CLASS</div><div class="heroTitle" id="selectedTitle">Saitama — Hero Foundation</div><p class="muted" id="selectedDesc" style="font-size:12px"></p><button class="primary" onclick="activate()">Activate this class</button></div></div>
@@ -41,12 +52,12 @@ button{background:#1c3158;color:var(--white);border:1px solid #45669d;border-rad
 </section>
 <section id="progress" class="view hidden">
  <div class="panel"><h2>PROGRESSION & ACHIEVEMENTS</h2><div class="statgrid" id="stats"></div><div id="achievements" class="muted" style="font-size:12px;line-height:2;margin-top:14px"></div></div>
- <div class="panel"><div class="row"><div><h2>WEEKLY GATE</h2><div class="tiny">Days with completed quests</div></div><strong id="week">0 / 7</strong></div><div class="bar"><div class="fill" id="weekBar"></div></div><button style="margin-top:13px" onclick="rename()">Rename hunter</button> <button onclick="reset()">Reset all progress</button></div>
+ <div class="panel"><div class="row"><div><h2>WEEKLY GATE</h2><div class="tiny">Days with completed quests this week</div></div><strong id="week">0 / 3</strong></div><div class="bar"><div class="fill" id="weekBar"></div></div><button class="primary" id="weekClaim" style="margin-top:12px" onclick="claimWeekly()">Claim weekly reward · +30 XP</button><div class="divider"></div><div class="row"><div><h2>MONTHLY GATE</h2><div class="tiny">12 active days in this month</div></div><strong id="monthProgress">0 / 12</strong></div><div class="bar"><div class="fill" id="monthProgressBar"></div></div><button id="monthClaim" style="margin-top:12px" onclick="claimMonthly()">Claim monthly reward · +100 XP</button><div class="setting"><span class="tiny">Victory sound & haptics</span><input id="soundToggle" type="checkbox" checked onchange="setSound(this.checked)"></div><button style="margin-top:13px" onclick="rename()">Rename hunter</button> <button onclick="reset()">Reset all progress</button></div>
 </section>
 <div class="notice"><b>Safety protocol:</b> These are short, beginner-level activity ideas, not a medical or professional training plan. Start easy, warm up, rest, and stop if you feel pain, dizzy or unwell. No extreme anime challenges, max-effort tests, weight-cutting or training through symptoms. Get a parent/guardian and qualified healthcare professional's guidance before starting exercise if you have health restrictions. Build skills for health and performance, not to copy a fictional body.</div>
 <div class="footer">Saves locally in this browser. This single-file edition needs no app installation.</div>
 </main>
-<nav class="tabs"><button class="active" onclick="go('home',this)">⌂<br>HOME</button><button onclick="go('classes',this)">✦<br>CLASSES</button><button onclick="go('quests',this)">⚔<br>QUESTS</button><button onclick="go('progress',this)">◈<br>PROGRESS</button></nav>
+<div class="toast" id="toast"><strong id="toastTitle">QUEST CLEARED!</strong><small id="toastText">XP added to your profile</small></div>\n<nav class="tabs"><button class="active" onclick="go('home',this)">⌂<br>HOME</button><button onclick="go('classes',this)">✦<br>CLASSES</button><button onclick="go('quests',this)">⚔<br>QUESTS</button><button onclick="go('progress',this)">◈<br>PROGRESS</button></nav>
 <script>
 const C={
  saitama:{name:'Saitama',title:'Hero Foundation',desc:'Beginner all-round movement, mobility and easy aerobic base.',tag:'FOUNDATION',q:[['Warm-up Protocol','5 minutes of easy walking in place and gentle joint movements.',10,'Recovery'],['Foundation Strength','Choose wall push-ups OR chair sit-to-stands: 1–2 easy sets.',15,'Strength'],['Easy Endurance','10 minutes relaxed walking at a pace where talking is easy.',15,'Endurance'],['Mobility Reset','5 minutes of gentle, comfortable mobility.',10,'Agility']]},
@@ -60,8 +71,8 @@ const C={
  suho:{name:'Ahn Su-ho',title:'Weak Hero — Athletic Boxing Fitness',desc:'Non-contact conditioning, rhythm, coordination and balance inspired by Su-ho.',tag:'BOXING FITNESS',q:[['Boxing Fitness Warm-up','5 minutes easy walking, shoulder rolls and gentle mobility.',10,'Recovery'],['Rhythm & Steps','3 rounds of 30 seconds light step-taps; rest between rounds.',15,'Agility'],['Skipping Alternative','If safe and comfortable, 3 × 20 seconds easy rope skipping OR march in place.',15,'Endurance'],['Core & Cooldown','Gentle bird-dogs, then relaxed breathing and cooldown.',10,'Strength']]},
  baek:{name:'Baku',title:'Weak Hero — Strength & Conditioning',desc:'Steady general conditioning and body control inspired by Baku; no fighting drills.',tag:'CONDITIONING',q:[['Warm-up','5 minutes easy warm-up.',10,'Recovery'],['Supported Strength','2 easy sets of chair sit-to-stands.',15,'Strength'],['Coordination','3 rounds of gentle side steps for 20 seconds.',15,'Agility'],['Recovery Check','Take a break, hydrate normally and log how you feel.',10,'Recovery']]}
 };
-const def={name:'PLAYER',xp:0,level:1,active:'saitama',selected:'saitama',stats:{Strength:1,Agility:1,Intelligence:1,Endurance:1,Recovery:1,Discipline:1},done:{},bonusDays:[],days:[],lastDate:''};
-let d;try{d={...def,...JSON.parse(localStorage.getItem('ariseFinal')||'{}')};d.stats={...def.stats,...d.stats}}catch(e){d={...def,stats:{...def.stats}}}
+const def={name:'PLAYER',xp:0,level:1,active:'saitama',selected:'saitama',stats:{Strength:1,Agility:1,Intelligence:1,Endurance:1,Recovery:1,Discipline:1},done:{},bonusDays:[],days:[],lastDate:'',sound:true,weeklyClaims:[],monthlyClaims:[]};
+let d;try{d={...def,...JSON.parse(localStorage.getItem('ariseFinal')||'{}')};d.stats={...def.stats,...d.stats};d.weeklyClaims=d.weeklyClaims||[];d.monthlyClaims=d.monthlyClaims||[];d.sound=d.sound!==false}catch(e){d={...def,stats:{...def.stats},weeklyClaims:[],monthlyClaims:[]}}
 function today(){return new Date().toLocaleDateString('en-CA')}function save(){localStorage.setItem('ariseFinal',JSON.stringify(d));render()}
 function resetDay(){if(d.lastDate!==today()){d.done={};d.lastDate=today();save()}}
 function rank(){return d.level>=30?'S-RANK':d.level>=20?'A-RANK':d.level>=12?'B-RANK':d.level>=7?'C-RANK':d.level>=3?'D-RANK':'E-RANK'}
@@ -78,14 +89,32 @@ function render(){
  document.getElementById('homeStats').innerHTML=Object.entries(d.stats).slice(0,4).map(([k,v])=>`<div class="stat"><small>${k.toUpperCase()}</small><strong>${v}</strong></div>`).join('');
  document.getElementById('stats').innerHTML=Object.entries(d.stats).map(([k,v])=>`<div class="stat"><small>${k.toUpperCase()}</small><strong>${v}</strong></div>`).join('');
  let ach=[['First Steps',d.xp>=20],['Level 3',d.level>=3],['Class Finisher',done===a.q.length],['Seven-day Hunter',streak()>=7],['Century Club',d.xp>=100]];document.getElementById('achievements').innerHTML=ach.map(x=>(x[1]?'🏆 ':'🔒 ')+x[0]).join('<br>');
- document.getElementById('week').textContent=Math.min(7,d.days.length)+' / 7';document.getElementById('weekBar').style.width=Math.min(100,d.days.length/7*100)+'%';
+ 
+ const now=new Date(), start=new Date(now);start.setDate(now.getDate()-((now.getDay()+6)%7));start.setHours(0,0,0,0);
+ const weekDays=d.days.filter(x=>{const z=new Date(x+'T00:00:00');return z>=start&&z<=now}).length;
+ const monthDays=d.days.filter(x=>x.slice(0,7)===today().slice(0,7)).length;
+ document.getElementById('week').textContent=Math.min(3,weekDays)+' / 3';document.getElementById('weekBar').style.width=Math.min(100,weekDays/3*100)+'%';
+ document.getElementById('weekClaim').disabled=weekDays<3||d.weeklyClaims.includes(weekKey());
+ document.getElementById('monthCount').textContent=Math.min(12,monthDays)+' / 12 DAYS';
+ document.getElementById('monthBar').style.width=Math.min(100,monthDays/12*100)+'%';
+ document.getElementById('monthProgress').textContent=Math.min(12,monthDays)+' / 12';
+ document.getElementById('monthProgressBar').style.width=Math.min(100,monthDays/12*100)+'%';
+ document.getElementById('monthClaim').disabled=monthDays<12||d.monthlyClaims.includes(today().slice(0,7));
+ document.getElementById('soundToggle').checked=d.sound;
+
 }
 function select(id){d.selected=id;render()}function activate(){d.active=d.selected;d.done={};save();go('quests')}
-function toggle(i){let id=d.active+'_'+i;if(d.done[id])return;let q=active().q[i];d.done[id]=true;d.xp+=q[2];d.stats[q[3]]=(d.stats[q[3]]||1)+1;d.level=Math.floor(d.xp/100)+1;if(!d.days.includes(today()))d.days.push(today());save()}
-function bonus(){if(active().q.some((q,i)=>!d.done[d.active+'_'+i])||d.bonusDays.includes(today()))return;d.xp+=25;d.level=Math.floor(d.xp/100)+1;d.bonusDays.push(today());save()}
+function toggle(i){let id=d.active+'_'+i;if(d.done[id])return;let q=active().q[i],oldLevel=d.level;d.done[id]=true;d.xp+=q[2];d.stats[q[3]]=(d.stats[q[3]]||1)+1;d.level=Math.floor(d.xp/100)+1;if(!d.days.includes(today()))d.days.push(today());save();celebrate(d.level>oldLevel?'LEVEL UP!':'QUEST CLEARED!',d.level>oldLevel?'You reached level '+d.level:'+'+q[2]+' XP earned');}
+function bonus(){if(active().q.some((q,i)=>!d.done[d.active+'_'+i])||d.bonusDays.includes(today()))return;let old=d.level;d.xp+=25;d.level=Math.floor(d.xp/100)+1;d.bonusDays.push(today());save();celebrate(d.level>old?'LEVEL UP!':'DAILY CLEAR!', '+25 BONUS XP');}
+function weekKey(){const n=new Date(),m=new Date(n);m.setDate(n.getDate()-((n.getDay()+6)%7));return m.getFullYear()+'-'+(m.getMonth()+1)+'-'+m.getDate()}
+function claimWeekly(){const start=new Date(),m=new Date(start);m.setDate(start.getDate()-((start.getDay()+6)%7));m.setHours(0,0,0,0);let count=d.days.filter(x=>new Date(x+'T00:00:00')>=m).length;if(count<3||d.weeklyClaims.includes(weekKey()))return;let old=d.level;d.xp+=30;d.level=Math.floor(d.xp/100)+1;d.weeklyClaims.push(weekKey());save();celebrate(d.level>old?'LEVEL UP!':'WEEKLY GATE CLEARED!','+30 XP reward')}
+function claimMonthly(){let count=d.days.filter(x=>x.slice(0,7)===today().slice(0,7)).length,month=today().slice(0,7);if(count<12||d.monthlyClaims.includes(month))return;let old=d.level;d.xp+=100;d.level=Math.floor(d.xp/100)+1;d.monthlyClaims.push(month);save();celebrate(d.level>old?'LEVEL UP!':'MONTHLY GATE CLEARED!','+100 XP reward')}
+function setSound(v){d.sound=v;save()}
+function celebrate(title,sub){document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=sub;let t=document.getElementById('toast');t.classList.add('show');if(d.sound){try{let Ctx=window.AudioContext||window.webkitAudioContext,c=new Ctx(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(540,c.currentTime);o.frequency.exponentialRampToValueAtTime(880,c.currentTime+.18);g.gain.setValueAtTime(.12,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.38);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.4)}catch(e){}if(navigator.vibrate)navigator.vibrate([35,35,70])}setTimeout(()=>t.classList.remove('show'),1900)}
+
 function streak(){let n=0,x=new Date(),set=new Set(d.days);if(!set.has(today()))x.setDate(x.getDate()-1);while(set.has(x.toLocaleDateString('en-CA'))){n++;x.setDate(x.getDate()-1)}return n}
 function rename(){let n=prompt('Hunter name:',d.name);if(n&&n.trim()){d.name=n.trim().slice(0,18).toUpperCase();save()}}
-function reset(){if(confirm('Reset all Hunter System progress?')){localStorage.removeItem('ariseFinal');d={...def,stats:{...def.stats},done:{},days:[],bonusDays:[]};save()}}
+function reset(){if(confirm('Reset all Hunter System progress?')){localStorage.removeItem('ariseFinal');d={...def,stats:{...def.stats},done:{},days:[],bonusDays:[],weeklyClaims:[],monthlyClaims:[]};save()}}
 function go(id,btn){document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');else document.querySelectorAll('.tabs button')[['home','classes','quests','progress'].indexOf(id)].classList.add('active')}
 resetDay();render();
 </script></body></html>
