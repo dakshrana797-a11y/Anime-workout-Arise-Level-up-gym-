@@ -77,6 +77,15 @@ html{scroll-behavior:smooth}body:before{content:"";position:fixed;inset:0;pointe
 .motionCue span{padding:4px 7px;border-radius:7px;background:#1b3154;border:1px solid #345b85}
 .motionCue i{font-style:normal;animation:cuePulse 1s ease-in-out infinite alternate}
 @keyframes cuePulse{to{opacity:.35;transform:translateX(3px)}}
+
+/* HAND-CODED CHARACTER SILHOUETTES — original vector artwork, not AI images */
+.class{padding:9px;min-height:205px}
+.classPortrait{height:116px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;margin:-2px -2px 8px;border-radius:10px;background:radial-gradient(ellipse at 50% 75%,#31527b 0,#142744 48%,#091326 100%);border:1px solid #35527c}
+.classPortrait:after{content:"";position:absolute;left:12%;right:12%;bottom:8px;height:1px;background:linear-gradient(90deg,transparent,#70eaff99,transparent);box-shadow:0 0 14px #55dfff}
+.classPortrait svg{height:112px;width:100%;max-width:190px;filter:drop-shadow(0 0 8px #65dfff55);animation:portraitFloat 4s ease-in-out infinite}
+.class:nth-child(2n) .classPortrait svg{animation-delay:.7s}
+@keyframes portraitFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-3px)}}
+.class .symbol{display:none}
 </style></head><body>
 <div class="overlay" id="setupOverlay"><div class="setupCard"><div class="eyebrow">PLAYER REGISTRATION // LOCAL PROFILE</div><div class="setupTitle">INITIALISE HUNTER</div><p class="tiny">Set a safe starting point. Your entries stay on this device.</p><div class="setupGrid">
 <div class="setupField"><label>AGE</label><input id="setupAge" type="number" min="13" max="99" placeholder="e.g. 16"></div><div class="setupField"><label>HEIGHT (CM)</label><input id="setupHeight" type="number" min="100" max="230" placeholder="Optional"></div><div class="setupField"><label>CURRENT WEIGHT (KG)</label><input id="setupWeight" type="number" min="25" max="300" step=".1" placeholder="Optional"></div><div class="setupField"><label>MAIN GOAL</label><select id="setupGoal"><option>General fitness</option><option>Stamina</option><option>Mobility</option><option>Football coordination</option><option>Strength skills</option><option>Healthy routine</option></select></div><div class="setupField"><label>EXPERIENCE</label><select id="setupExperience"><option>Beginner</option><option>Some experience</option><option>Experienced</option></select></div><div class="setupField"><label>DAYS PER WEEK</label><select id="setupDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div class="setupField full"><label>EQUIPMENT</label><select id="setupEquipment"><option>Bodyweight only</option><option>Resistance band</option><option>Home equipment</option><option>Gym access</option><option>Home + gym</option></select></div><div class="setupField full"><label>HEALTH / EXERCISE RESTRICTIONS</label><select id="setupHealth"><option value="none">No known restrictions</option><option value="yes">I have a health condition or restrictions</option><option value="unsure">I'm unsure — ask my clinician first</option></select></div></div>
@@ -139,11 +148,29 @@ function saveRenalInstructions(){d.renalInstructions=document.getElementById('re
 function saveMealNotes(){d.mealNotes=document.getElementById('mealNotes').value.trim();localStorage.setItem('ariseFinal',JSON.stringify(d));celebrate('MEAL NOTES SAVED','No calorie or food score was calculated.')}
 
 function active(){return C[d.active]||C.saitama}
+
+function hunterSilhouette(id){
+ const defs={
+ jinwoo:{hair:'<path d="M66 42 Q56 12 83 12 Q110 10 108 43 L101 36 97 51 89 38 81 48 76 36Z"/>',body:'<path d="M69 59 Q82 52 95 59 L108 78 101 88 97 77 99 119 65 119 68 78 62 89 54 82Z"/>'},
+ suho:{hair:'<path d="M67 41 Q63 17 85 16 Q105 18 103 41 L96 33 91 42 84 33 77 42 72 34Z"/>',body:'<path d="M70 58 Q84 53 96 59 L106 76 99 83 94 76 97 119 67 119 70 76 64 84 57 78Z"/>'},
+ gojo:{hair:'<path d="M61 44 L64 25 73 30 76 12 85 25 95 10 97 29 111 22 106 46 98 37 90 45 82 34 73 46Z"/>',body:'<path d="M70 58 Q84 52 97 58 L109 78 101 85 95 76 98 119 66 119 70 76 63 85 56 78Z"/>'},
+ goku:{hair:'<path d="M58 48 L53 26 68 32 66 8 82 25 91 3 97 27 115 14 107 42 98 35 91 48 82 37 73 50 67 39Z"/>',body:'<path d="M67 57 Q83 48 99 57 L113 76 104 86 97 77 102 119 63 119 68 77 60 86 53 77Z"/>'},
+ baki:{hair:'<path d="M66 42 Q63 22 83 18 Q104 20 103 43 L96 35 89 42 82 35 75 43Z"/>',body:'<path d="M66 58 Q83 48 101 58 L115 76 105 88 98 78 103 119 61 119 67 78 59 88 50 77Z"/>'},
+ toji:{hair:'<path d="M66 43 Q63 18 84 17 Q106 18 104 44 L97 34 89 42 82 35 75 44Z"/>',body:'<path d="M64 58 Q83 46 103 58 L117 77 107 89 99 78 104 119 59 119 67 78 57 89 48 77Z"/>'},
+ garou:{hair:'<path d="M61 45 L57 28 69 30 70 16 82 27 91 12 97 29 109 24 104 47 96 37 88 45 80 36 72 48Z"/>',body:'<path d="M70 59 Q83 52 96 59 L108 77 100 86 95 77 99 119 66 119 70 77 63 86 55 78Z"/>'},
+ messi:{hair:'<path d="M68 41 Q66 22 84 20 Q101 21 101 42 L95 35 89 39 82 34 75 42Z"/>',body:'<path d="M71 59 Q84 53 96 59 L106 76 98 84 94 77 98 111 68 111 70 77 64 84 57 77Z"/>'}
+ };
+ const v=defs[id]||defs.jinwoo;
+ const legs=id==='messi'?'<path d="M70 107 L83 107 78 139 69 139Z M87 107 L98 107 107 134 99 139Z"/>':'<path d="M68 108 L83 108 80 142 69 142Z M85 108 L99 108 102 142 91 142Z"/>';
+ const extras=id==='messi'?'<path d="M48 95 Q58 88 65 97 L59 104 49 102Z"/><circle cx="45" cy="108" r="5"/>':'';
+ return '<svg viewBox="0 0 160 150" aria-hidden="true"><g fill="#03060d" stroke="#02040a" stroke-width="2" stroke-linejoin="round"><circle cx="84" cy="43" r="19"/>'+v.hair+v.body+legs+extras+'</g><path d="M46 145 H119" stroke="#59dfff" stroke-opacity=".35" stroke-width="1"/></svg>';
+}
+
 function render(){
  document.getElementById('player').textContent=d.name;document.getElementById('rank').textContent=rank()+' HUNTER';const ri=rankInfo();document.getElementById('rankDisplay').textContent=ri.cur.name+' HUNTER';document.getElementById('rankNext').textContent=ri.next?'NEXT GATE · '+ri.next.name+' AT LVL '+ri.next.level:'MAX RANK · HUNTER MASTERED';document.getElementById('tierLabel').textContent=ri.cur.tier;document.getElementById('rankBar').style.width=ri.pct+'%';document.getElementById('rankProgressText').textContent=ri.next?Math.round(ri.pct)+'% TO '+ri.next.name:'RANK COMPLETE';document.getElementById('rankLevelText').textContent='LVL '+d.level;document.getElementById('level').textContent=d.level;document.getElementById('xp').textContent=d.xp;document.getElementById('xpText').textContent=(d.xp%100)+' / 100 XP';document.getElementById('xpBar').style.width=(d.xp%100)+'%';document.getElementById('streak').textContent=streak()+' DAY STREAK';
  const logged=d.checkins.includes(today());document.getElementById('checkinStatus').textContent=logged?'LOGGED TODAY':'NOT LOGGED';document.getElementById('checkinMessage').textContent=logged?'Nice work checking in. Consistency includes recovery.':'Training or recovery: make a realistic plan for today.';document.getElementById('recoveryButton').disabled=logged;document.getElementById('recoveryButton').textContent=logged?'TODAY LOGGED':'LOG A REST / RECOVERY DAY';
  let a=active();document.getElementById('classText').textContent='ACTIVE: '+a.name.toUpperCase();document.getElementById('homeClass').textContent=a.name.toUpperCase()+' — '+a.title.toUpperCase();document.getElementById('homeDesc').textContent=a.desc;
- document.getElementById('classCards').innerHTML=Object.entries(C).map(([id,c])=>`<div class="class ${d.selected===id?'selected':''}" onclick="select('${id}')"><div class="symbol">${id==='guts'?'⚔':id==='goku'?'✦':id==='suho'?'🥊':id==='baek'?'◆':id==='messi'?'⚽':'◇'}</div><div class="tag">${c.tag}</div><h3>${c.name}</h3><p>${c.title}</p></div>`).join('');
+ document.getElementById('classCards').innerHTML=Object.entries(C).map(([id,c])=>`<div class="class ${d.selected===id?'selected':''}" onclick="select('${id}')"><div class="classPortrait">${hunterSilhouette(id)}</div><div class="tag">${c.tag}</div><h3>${c.name}</h3><p>${c.title}</p></div>`).join('');
  let s=C[d.selected];document.getElementById('selectedTitle').textContent=s.name+' — '+s.title;document.getElementById('selectedDesc').textContent=s.desc;
  let done=a.q.filter((q,i)=>d.done[d.active+'_'+i]).length;document.getElementById('doneCount').textContent=done+' / '+a.q.length;document.getElementById('questCount').textContent=done+' / '+a.q.length;document.getElementById('questTitle').textContent=a.name.toUpperCase()+' QUEST BOARD';
  document.getElementById('questBoard').innerHTML=a.q.map((q,i)=>`<label class="quest"><input type="checkbox" ${d.done[d.active+'_'+i]?'checked':''} onchange="toggle(${i})"><div style="flex:1"><b>${q[0]}</b><p>${q[1]}</p></div><div class="xp">+${q[2]} XP</div></label>`).join('');
