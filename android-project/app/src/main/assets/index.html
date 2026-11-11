@@ -122,7 +122,26 @@ function weekKey(){const n=new Date(),m=new Date(n);m.setDate(n.getDate()-((n.ge
 function claimWeekly(){const start=new Date(),m=new Date(start);m.setDate(start.getDate()-((start.getDay()+6)%7));m.setHours(0,0,0,0);let count=d.days.filter(x=>new Date(x+'T00:00:00')>=m).length;if(count<3||d.weeklyClaims.includes(weekKey()))return;let old=d.level;d.xp+=30;d.level=Math.floor(d.xp/100)+1;d.weeklyClaims.push(weekKey());save();celebrate(d.level>old?'LEVEL UP!':'WEEKLY GATE CLEARED!','+30 XP reward')}
 function claimMonthly(){let count=d.days.filter(x=>x.slice(0,7)===today().slice(0,7)).length,month=today().slice(0,7);if(count<12||d.monthlyClaims.includes(month))return;let old=d.level;d.xp+=100;d.level=Math.floor(d.xp/100)+1;d.monthlyClaims.push(month);save();celebrate(d.level>old?'LEVEL UP!':'MONTHLY GATE CLEARED!','+100 XP reward')}
 function setSound(v){d.sound=v;save()}
-function celebrate(title,sub){document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=sub;let t=document.getElementById('toast');t.classList.add('show');if(d.sound){try{let Ctx=window.AudioContext||window.webkitAudioContext,c=new Ctx(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(540,c.currentTime);o.frequency.exponentialRampToValueAtTime(880,c.currentTime+.18);g.gain.setValueAtTime(.12,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.38);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.4)}catch(e){}if(navigator.vibrate)navigator.vibrate([35,35,70])}setTimeout(()=>t.classList.remove('show'),1900)}
+let achievementAudio=null;
+function playSystemSound(levelUp){
+ try{
+  const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  achievementAudio=achievementAudio||new Ctx();const c=achievementAudio;
+  if(c.state==='suspended')c.resume();
+  const now=c.currentTime;
+  const master=c.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.075,now+.025);master.gain.exponentialRampToValueAtTime(.0001,now+(levelUp?1.05:.72));master.connect(c.destination);
+  const notes=levelUp?[523.25,659.25,783.99,1046.5,1318.5]:[587.33,783.99,987.77,1174.66];
+  notes.forEach((hz,i)=>{
+   const osc=c.createOscillator(),gain=c.createGain(),filter=c.createBiquadFilter();
+   osc.type=i%2?'triangle':'sine';osc.frequency.setValueAtTime(hz,now+i*.085);
+   filter.type='lowpass';filter.frequency.setValueAtTime(levelUp?4200:3200,now);
+   gain.gain.setValueAtTime(.0001,now+i*.085);gain.gain.exponentialRampToValueAtTime(i===0?.7:.42,now+i*.085+.018);gain.gain.exponentialRampToValueAtTime(.0001,now+i*.085+(levelUp?.48:.34));
+   osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(now+i*.085);osc.stop(now+i*.085+(levelUp?.5:.36));
+  });
+  const bass=c.createOscillator(),bg=c.createGain();bass.type='sine';bass.frequency.setValueAtTime(levelUp?110:130,now);bass.frequency.exponentialRampToValueAtTime(levelUp?55:65,now+.22);bg.gain.setValueAtTime(.0001,now);bg.gain.exponentialRampToValueAtTime(.22,now+.025);bg.gain.exponentialRampToValueAtTime(.0001,now+.28);bass.connect(bg);bg.connect(master);bass.start(now);bass.stop(now+.3);
+ }catch(e){}
+}
+function celebrate(title,sub){document.getElementById('toastTitle').textContent=title;document.getElementById('toastText').textContent=sub;let t=document.getElementById('toast');t.classList.add('show');if(d.sound){playSystemSound(title.includes('LEVEL UP'));if(navigator.vibrate)navigator.vibrate([30,25,45,25,75])}setTimeout(()=>t.classList.remove('show'),1900)}
 
 
 const workoutPlans={
