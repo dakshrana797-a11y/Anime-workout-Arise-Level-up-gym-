@@ -47,8 +47,7 @@ public class MainActivity extends Activity {
         webView.loadUrl("file:///android_asset/index.html");
 
         SharedPreferences prefs = getSharedPreferences("arise_hud", MODE_PRIVATE);
-        if (!prefs.getBoolean("overlay_prompt_seen", false)) {
-            prefs.edit().putBoolean("overlay_prompt_seen", true).apply();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             new AlertDialog.Builder(this)
                 .setTitle("Activate ARISE Floating HUD?")
                 .setMessage("Allow ARISE to display its player panel over other apps. You can turn this off anytime in Android settings.")
@@ -114,13 +113,17 @@ public class MainActivity extends Activity {
                 int[] levels = {1, 4, 7, 12, 20, 30};
                 String rank = ranks[0];
                 for (int i = 0; i < levels.length; i++) if (level >= levels[i]) rank = ranks[i];
-                getSharedPreferences("arise_hud", MODE_PRIVATE).edit()
-                    .putString("player_name", name).putString("player_rank", rank)
+                SharedPreferences prefs = getSharedPreferences("arise_hud", MODE_PRIVATE);
+                prefs.edit().putString("player_name", name).putString("player_rank", rank)
                     .putInt("player_level", level).putInt("player_xp", xp).apply();
-                Intent update = new Intent(MainActivity.this, AriseHudService.class);
-                update.setAction(AriseHudService.ACTION_REFRESH);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(update);
-                else startService(update);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(MainActivity.this)) {
+                    if (prefs.getBoolean("hud_requested", false)) {
+                        Intent update = new Intent(MainActivity.this, AriseHudService.class);
+                        update.setAction(AriseHudService.ACTION_REFRESH);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(update);
+                        else startService(update);
+                    }
+                }
             } catch (Exception ignored) {}
         }
     }
