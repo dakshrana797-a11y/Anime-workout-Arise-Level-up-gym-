@@ -183,7 +183,7 @@ const C={
  goku:{name:'Goku',title:'All-round Athlete',desc:'Train general athletic qualities, not an attempt to copy a fictional physique.',tag:'ALL-ROUND ATHLETE',q:[['Dynamic Warm-up','5 minutes easy movement.',10,'Recovery'],['Coordination Quest','5 minutes of gentle step patterns.',15,'Agility'],['Strength Basics','1–2 easy sets of wall push-ups OR sit-to-stands.',15,'Strength'],['Aerobic Base','10 minutes relaxed walking or cycling.',15,'Endurance']]},
  suho:{name:'Ahn Su-ho',title:'Weak Hero — Athletic Boxing Fitness',desc:'Non-contact conditioning, rhythm, coordination and balance inspired by Su-ho.',tag:'BOXING FITNESS',q:[['Boxing Fitness Warm-up','5 minutes easy walking, shoulder rolls and gentle mobility.',10,'Recovery'],['Rhythm & Steps','3 rounds of 30 seconds light step-taps; rest between rounds.',15,'Agility'],['Skipping Alternative','If safe and comfortable, 3 × 20 seconds easy rope skipping OR march in place.',15,'Endurance'],['Core & Cooldown','Gentle bird-dogs, then relaxed breathing and cooldown.',10,'Strength']]},
  baek:{name:'Baku',title:'Weak Hero — Strength & Conditioning',desc:'Steady general conditioning and body control inspired by Baku; no fighting drills.',tag:'CONDITIONING',q:[['Warm-up','5 minutes easy warm-up.',10,'Recovery'],['Supported Strength','2 easy sets of chair sit-to-stands.',15,'Strength'],['Coordination','3 rounds of gentle side steps for 20 seconds.',15,'Agility'],['Recovery Check','Take a break, hydrate normally and log how you feel.',10,'Recovery']]},
- messi:{name:'Messi',title:'Football Vision & Close Control',desc:'Football-inspired coordination, balance, passing practice and gentle footwork. Not a substitute for coached football training.',tag:'FOOTBALL CLASS',q:[['Ball Mastery Warm-up','5 minutes easy walking, ankle circles and gentle ball touches.',10,'Recovery'],['Close-Control Touches','3 easy rounds of 30 seconds alternating gentle inside-foot touches; rest between rounds.',15,'Agility'],['Passing Accuracy','10 minutes of short passes to a safe wall or partner, using comfortable pace.',15,'Discipline'],['Balance & Cooldown','Gentle single-leg balance near support, then easy walking cooldown.',10,'Recovery']]}}
+ }
 
 const def={name:'PLAYER',xp:0,level:1,active:'saitama',selected:'saitama',stats:{Strength:1,Agility:1,Intelligence:1,Endurance:1,Recovery:1,Discipline:1},done:{},bonusDays:[],days:[],lastDate:'',sound:true,weeklyClaims:[],monthlyClaims:[],checkins:[],weeklyTarget:3,profile:null,renalInstructions:'',mealNotes:''};
 let d;try{d={...def,...JSON.parse(localStorage.getItem('ariseFinal')||'{}')};d.stats={...def.stats,...d.stats};d.weeklyClaims=d.weeklyClaims||[];d.monthlyClaims=d.monthlyClaims||[];d.checkins=d.checkins||[];d.weeklyTarget=Math.min(5,Math.max(2,Number(d.weeklyTarget)||3));d.sound=d.sound!==false}catch(e){d={...def,stats:{...def.stats},weeklyClaims:[],monthlyClaims:[],checkins:[],weeklyTarget:3}}
@@ -327,15 +327,26 @@ const splitLibrary={
  mobility:{name:'MOBILITY + CARDIO',desc:'A lighter day for comfortable movement, balance and easy aerobic activity.',items:[
  ['Easy walk or march','5 min','As needed','Cardio','Comfortable pace; you should be able to talk.'],['Ankle circles','2 × 8 each','20 sec','Ankles','Gentle circles in both directions.'],['Supported balance','2 × 10 sec each','30 sec','Balance','Stand near a stable support.'],['Gentle full-body mobility','3 min','As needed','Mobility','Move comfortably; do not force stretches.'],['Shoulder rolls','2 × 8','20 sec','Shoulders','Slow and relaxed.'],['Heel-to-toe walk','2 × 10 steps','30 sec','Balance','Walk beside a wall or stable support.'],['Seated trunk turns','1–2 × 6 each','30 sec','Trunk mobility','Turn gently without forcing.'],['Relaxed breathing','2 min','As needed','Recovery','Breathe comfortably and let your pace settle.']]}
 };
-function splitSelect(id){selectedSplit=id;renderWorkout()}
+function setWorkoutMode(mode){workoutMode=mode==='gym'?'gym':'home';document.getElementById('homeMode').classList.toggle('active',workoutMode==='home');document.getElementById('gymMode').classList.toggle('active',workoutMode==='gym');renderWorkout()}
+function splitSelect(id){if(splitLibrary[id]){selectedSplit=id;renderWorkout()}}
+function rankAdjustedItems(){
+ const arr=splitLibrary[selectedSplit].items.map(function(x){return x.slice()});
+ const r=rankIndex();
+ arr.forEach(function(x){
+  if(r>=1&&/×/.test(x[1]))x[1]=x[1].replace(/(\d+) × (\d+)/,function(_,a,b){return a+' × '+(Number(b)+(r===1?1:r>=3?2:0))});
+  if(r>=2&&/×/.test(x[1]))x[1]=x[1].replace(/^(\d+)/,function(n){return String(Number(n)+1)});
+  if(r>=3)x[4]=(x[4]||'')+' Try a more controlled tempo or a slightly harder variation only when form stays steady.';
+ });
+ return arr;
+}
 function renderWorkout(){
  const p=workoutPlans[workoutMode],split=splitLibrary[selectedSplit];
  document.getElementById('studioTitle').textContent=split.name+' · '+(workoutMode==='home'?'HOME':'GYM');
- const rinfo=rankInfo();document.getElementById('studioIntro').textContent='8 EXERCISES · '+rinfo.cur.name+' TRACK · '+split.desc+' '+(workoutMode==='home'?'Home-friendly options.':'Ask a qualified trainer to set up equipment and demonstrate technique.')+' Rank-ups unlock new themes and optional skill paths; they never force heavier loads or extra reps.';
+ const rinfo=rankInfo();document.getElementById('studioIntro').textContent='8 EXERCISES · '+rinfo.cur.name+' TRACK · '+split.desc+' '+(workoutMode==='home'?'Home-friendly options.':'Ask a qualified trainer to set up equipment and demonstrate technique.')+' '+['Technique first: learn the movement.','Add a few reps when form is steady.','An extra set may be added when recovery is good.','Try a harder variation with good technique.','Consider a small resistance increase with qualified supervision.','Maintain quality and recovery; progress only when ready.'][rankIndex()];
  document.getElementById('splitNav').innerHTML=Object.entries(splitLibrary).map(([id,x])=>'<button class="'+(selectedSplit===id?'active':'')+'" onclick="splitSelect(\''+id+'\')">'+x.name+'</button>').join('');
  function group(id,title,items,kind){let html='<div class="splitHeading">'+title+'</div>';items.forEach((x,i)=>{let key='workout_'+workoutMode+'_'+selectedSplit+'_'+kind+'_'+i;html+='<div class="exerciseTile"><div class="exerciseIcon">'+(kind==='warm'?'✦':kind==='cool'?'◌':'⚡')+'</div><div><strong>'+x[0]+'</strong><small>'+x[1]+' · Rest '+x[2]+' · '+x[3]+'</small></div><label style="font-size:10px;color:var(--cyan);white-space:nowrap"><input type="checkbox" data-workout-check="'+key+'" onchange="updateWorkoutProgress()"> Done</label><div class="motionCue"><span>START</span><i>→</i><span>CONTROLLED MOVE</span><i>→</i><span>RETURN</span></div>'+(x[4]?'<details><summary>HOW TO DO IT</summary><p>'+x[4]+'</p></details>':'')+'</div>'});document.getElementById(id).innerHTML=html}
  group('warmupList','01 · WARM UP',p.warm.map(x=>[x[0],x[1],x[2],x[3],'Start gently and keep the pace comfortable.']),'warm');
- group('mainWorkoutList','02 · '+split.name,split.items,'main');
+ group('mainWorkoutList','02 · '+split.name,rankAdjustedItems(),'main');
  group('cooldownList','03 · COOL DOWN',p.cool.map(x=>[x[0],x[1],x[2],x[3],'Slow down and keep each movement gentle.']),'cool');
  document.querySelectorAll('[data-workout-check]').forEach(el=>{el.checked=!!(d.workoutChecks&&d.workoutChecks[el.dataset.workoutCheck])});
  updateWorkoutProgress()
