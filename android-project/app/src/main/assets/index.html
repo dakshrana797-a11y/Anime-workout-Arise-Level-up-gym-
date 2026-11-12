@@ -241,11 +241,11 @@ function hunterSilhouette(id){
  baki:{hair:'<path d="M66 42 Q63 22 83 18 Q104 20 103 43 L96 35 89 42 82 35 75 43Z"/>',body:'<path d="M66 58 Q83 48 101 58 L115 76 105 88 98 78 103 119 61 119 67 78 59 88 50 77Z"/>'},
  toji:{hair:'<path d="M66 43 Q63 18 84 17 Q106 18 104 44 L97 34 89 42 82 35 75 44Z"/>',body:'<path d="M64 58 Q83 46 103 58 L117 77 107 89 99 78 104 119 59 119 67 78 57 89 48 77Z"/>'},
  garou:{hair:'<path d="M61 45 L57 28 69 30 70 16 82 27 91 12 97 29 109 24 104 47 96 37 88 45 80 36 72 48Z"/>',body:'<path d="M70 59 Q83 52 96 59 L108 77 100 86 95 77 99 119 66 119 70 77 63 86 55 78Z"/>'},
- messi:{hair:'<path d="M68 41 Q66 22 84 20 Q101 21 101 42 L95 35 89 39 82 34 75 42Z"/>',body:'<path d="M71 59 Q84 53 96 59 L106 76 98 84 94 77 98 111 68 111 70 77 64 84 57 77Z"/>'}
+
  };
  const v=defs[id]||defs.jinwoo;
- const legs=id==='messi'?'<path d="M70 107 L83 107 78 139 69 139Z M87 107 L98 107 107 134 99 139Z"/>':'<path d="M68 108 L83 108 80 142 69 142Z M85 108 L99 108 102 142 91 142Z"/>';
- const extras=id==='messi'?'<path d="M48 95 Q58 88 65 97 L59 104 49 102Z"/><circle cx="45" cy="108" r="5"/>':'';
+ const legs='<path d="M68 108 L83 108 80 142 69 142Z M85 108 L99 108 102 142 91 142Z"/>';
+ const extras='';
  return '<svg viewBox="0 0 160 150" aria-hidden="true"><g fill="#03060d" stroke="#02040a" stroke-width="2" stroke-linejoin="round"><circle cx="84" cy="43" r="19"/>'+v.hair+v.body+legs+extras+'</g><path d="M46 145 H119" stroke="#59dfff" stroke-opacity=".35" stroke-width="1"/></svg>';
 }
 
