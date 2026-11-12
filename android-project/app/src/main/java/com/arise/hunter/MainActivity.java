@@ -14,6 +14,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -33,8 +34,15 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setDatabaseEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
         webView.addJavascriptInterface(new AriseBridge(), "AriseNative");
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                String syncScript = "(function(){try{var k='ariseFinal';var send=function(v){if(window.AriseNative&&AriseNative.syncPlayerData)AriseNative.syncPlayerData(v)};var old=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){old.call(this,key,value);if(key===k)send(value)};var current=localStorage.getItem(k);if(current)send(current)}catch(e){}})();";
+                view.evaluateJavascript(syncScript, null);
+            }
+        });
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
 
@@ -51,6 +59,7 @@ public class MainActivity extends Activity {
     }
 
     private void requestOverlayPermission() {
+        getSharedPreferences("arise_hud", MODE_PRIVATE).edit().putBoolean("hud_requested", true).apply();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + getPackageName()));
@@ -68,7 +77,6 @@ public class MainActivity extends Activity {
         Intent service = new Intent(this, AriseHudService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(service);
         else startService(service);
-        Toast.makeText(this, "ARISE HUD activated.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -92,14 +100,28 @@ public class MainActivity extends Activity {
     private class AriseBridge {
         @JavascriptInterface
         public void enableFloatingHud() {
-            runOnUiThread(() -> {
-                getSharedPreferences("arise_hud", MODE_PRIVATE).edit().putBoolean("hud_requested", true).apply();
-                requestOverlayPermission();
-            });
+            runOnUiThread(() -> requestOverlayPermission());
         }
+
         @JavascriptInterface
-        public void openPlayerProfile() {
-            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Player profile is available in ARISE.", Toast.LENGTH_SHORT).show());
+        public void syncPlayerData(String json) {
+            try {
+                JSONObject data = new JSONObject(json);
+                String name = data.optString("name", "PLAYER");
+                int level = Math.max(1, data.optInt("level", 1));
+                int xp = Math.max(0, data.optInt("xp", 0));
+                String[] ranks = {"E-RANK", "D-RANK", "C-RANK", "B-RANK", "A-RANK", "S-RANK"};
+                int[] levels = {1, 4, 7, 12, 20, 30};
+                String rank = ranks[0];
+                for (int i = 0; i < levels.length; i++) if (level >= levels[i]) rank = ranks[i];
+                getSharedPreferences("arise_hud", MODE_PRIVATE).edit()
+                    .putString("player_name", name).putString("player_rank", rank)
+                    .putInt("player_level", level).putInt("player_xp", xp).apply();
+                Intent update = new Intent(MainActivity.this, AriseHudService.class);
+                update.setAction(AriseHudService.ACTION_REFRESH);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(update);
+                else startService(update);
+            } catch (Exception ignored) {}
         }
     }
 
